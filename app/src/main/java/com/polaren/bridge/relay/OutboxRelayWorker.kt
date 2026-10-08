@@ -47,9 +47,14 @@ class OutboxRelayWorker(context: Context, params: WorkerParameters) : CoroutineW
                     when {
                         response.isSuccessful -> sentIds += event.id
                         code == 401 || code == 403 -> {
-                            Log.e(TAG, "Pairing rejected (HTTP $code); clearing pairing")
-                            pairing.markRevoked()
-                            outcome = Result.success()
+                            if (runAttemptCount < 3) {
+                                Log.w(TAG, "Pairing rejected (HTTP $code), retrying to account for backend eventual consistency")
+                                outcome = Result.retry()
+                            } else {
+                                Log.e(TAG, "Pairing rejected (HTTP $code); clearing pairing")
+                                pairing.markRevoked()
+                                outcome = Result.success()
+                            }
                         }
                         code == 408 || code == 429 || code >= 500 -> {
                             Log.w(TAG, "Transient relay failure HTTP $code")

@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="PolarenBridge">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-10-07T07:54:07.858646Z">
+        <DropdownSelection timestamp="2026-10-08T11:26:49.104378Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/hugoventer/.android/avd/Automotive_Large_Portrait.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/hugoventer/.android/avd/Automotive_1024p_landscape.avd" />
             </handle>
           </Target>
         </DropdownSelection>

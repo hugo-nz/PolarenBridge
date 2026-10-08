@@ -19,7 +19,7 @@ android {
         buildConfigField(
             "String",
             "RELAY_BASE_URL",
-            "\"${providers.gradleProperty("polaren.relayBaseUrl").getOrElse("https://api.polaren.example.com/")}\""
+            "\"${providers.gradleProperty("polaren.relayBaseUrl").getOrElse("https://api.polaren.example.com/").trimEnd('/')}/\""
         )
         // Vendor/OEM property IDs for secondary telemetry; 0 disables the signal.
         buildConfigField("int", "VENDOR_LV_BATTERY_VOLTAGE_PROPERTY_ID",

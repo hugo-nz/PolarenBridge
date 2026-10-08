@@ -36,6 +36,7 @@ class PairingState(context: Context) {
     }
 
     fun savePairing(pairingId: String, relayToken: String, sharedSecret: ByteArray) {
+        Log.d(TAG, "savePairing called with pairingId: $pairingId")
         prefs.edit()
             .putString(KEY_PAIRING_ID, pairingId)
             .putString(KEY_RELAY_TOKEN, seal(relayToken.toByteArray(Charsets.UTF_8)))
@@ -43,15 +44,18 @@ class PairingState(context: Context) {
             .putBoolean(KEY_REVOKED, false)
             .commit()
         _paired.value = true
+        Log.d(TAG, "savePairing completed")
     }
 
     fun clear() {
+        Log.d(TAG, "clear called")
         prefs.edit().clear().commit()
         _paired.value = false
     }
 
     /** Clears credentials but remembers that the user must re-pair. */
     fun markRevoked() {
+        Log.d(TAG, "markRevoked called")
         prefs.edit().clear().putBoolean(KEY_REVOKED, true).commit()
         _paired.value = false
     }

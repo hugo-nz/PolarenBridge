@@ -2,6 +2,7 @@ package com.polaren.bridge
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
@@ -63,6 +64,7 @@ class PairingActivity : ComponentActivity() {
 
 private sealed interface PairingUiState {
     data object Loading : PairingUiState
+    data object Paired : PairingUiState
     data class ShowQr(val modules: Array<BooleanArray>) : PairingUiState
     data class Failed(val message: String) : PairingUiState
 }
@@ -70,13 +72,18 @@ private sealed interface PairingUiState {
 @Composable
 fun PairingScreen(onPairingComplete: () -> Unit) {
     val context = LocalContext.current
+    val pairingState = remember { PairingState(context) }
     val repository = remember {
-        PairingRepository(NetworkModule.relayApi, PairingState(context))
+        PairingRepository(NetworkModule.relayApi, pairingState)
     }
     var attempt by remember { mutableIntStateOf(0) }
-    var uiState by remember { mutableStateOf<PairingUiState>(PairingUiState.Loading) }
+    var uiState by remember { mutableStateOf<PairingUiState>(if (pairingState.isPaired) PairingUiState.Paired else PairingUiState.Loading) }
 
     LaunchedEffect(attempt) {
+        if (pairingState.isPaired) {
+            uiState = PairingUiState.Paired
+            return@LaunchedEffect
+        }
         uiState = PairingUiState.Loading
         try {
             val offer = repository.createOffer()
@@ -91,6 +98,7 @@ fun PairingScreen(onPairingComplete: () -> Unit) {
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            Log.e("PairingScreen", "Pairing failed (base URL ${NetworkModule.BASE_URL})", e)
             uiState = PairingUiState.Failed("Couldn't reach Polaren. Check the car's connection.")
         }
     }
@@ -102,14 +110,26 @@ fun PairingScreen(onPairingComplete: () -> Unit) {
     ) {
         Text(text = "Polaren Bridge", style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(12.dp))
-        Text(
-            text = "In the Polaren iOS app, choose Add car and scan this code.",
-            style = MaterialTheme.typography.bodyLarge
-        )
+        if (uiState !is PairingUiState.Paired) {
+            Text(
+                text = "In the Polaren iOS app, choose Add car and scan this code.",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
         Spacer(Modifier.height(24.dp))
 
         when (val state = uiState) {
             PairingUiState.Loading -> CircularProgressIndicator()
+            PairingUiState.Paired -> {
+                Text("This car is paired with Polaren.", style = MaterialTheme.typography.bodyLarge)
+                Spacer(Modifier.height(16.dp))
+                Button(onClick = {
+                    pairingState.clear()
+                    attempt++
+                }) {
+                    Text("Unpair")
+                }
+            }
             is PairingUiState.ShowQr -> QrImage(state.modules)
             is PairingUiState.Failed -> {
                 Text(state.message, style = MaterialTheme.typography.bodyLarge)

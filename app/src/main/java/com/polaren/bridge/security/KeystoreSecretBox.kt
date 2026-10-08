@@ -3,6 +3,7 @@ package com.polaren.bridge.security
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import java.security.KeyStore
+import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 
@@ -17,8 +18,9 @@ object KeystoreSecretBox {
     private const val IV_LENGTH_BYTES = 12
 
     fun seal(plaintext: ByteArray): ByteArray {
-        val blob = CryptoHelper.encrypt(getOrCreateKey(), plaintext)
-        return blob.iv + blob.ciphertext
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, getOrCreateKey())
+        return cipher.iv + cipher.doFinal(plaintext)
     }
 
     fun open(sealed: ByteArray): ByteArray {

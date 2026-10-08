@@ -3,6 +3,37 @@
   <component name="EmulatorDisplays">
     <option name="displayStateByAvdFolder">
       <map>
+        <entry key="$USER_HOME$/.android/avd/Automotive_1024p_landscape.avd">
+          <value>
+            <MultiDisplayState>
+              <option name="displayDescriptors">
+                <list>
+                  <display size="1024x768" />
+                  <display displayId="6" size="400x600" />
+                </list>
+              </option>
+              <option name="panelState">
+                <PanelState>
+                  <option name="splitPanel">
+                    <SplitPanelState>
+                      <option name="proportion" value="0.718773365020752" />
+                      <option name="firstComponent">
+                        <PanelState>
+                          <option name="displayId" value="0" />
+                        </PanelState>
+                      </option>
+                      <option name="secondComponent">
+                        <PanelState>
+                          <option name="displayId" value="6" />
+                        </PanelState>
+                      </option>
+                    </SplitPanelState>
+                  </option>
+                </PanelState>
+              </option>
+            </MultiDisplayState>
+          </value>
+        </entry>
         <entry key="$USER_HOME$/.android/avd/Automotive_Large_Portrait.avd">
           <value>
             <MultiDisplayState>
