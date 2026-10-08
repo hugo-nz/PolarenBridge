@@ -16,6 +16,16 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField(
+            "String",
+            "RELAY_BASE_URL",
+            "\"${providers.gradleProperty("polaren.relayBaseUrl").getOrElse("https://api.polaren.example.com/")}\""
+        )
+        // Vendor/OEM property IDs for secondary telemetry; 0 disables the signal.
+        buildConfigField("int", "VENDOR_LV_BATTERY_VOLTAGE_PROPERTY_ID",
+            providers.gradleProperty("polaren.lvBatteryVoltagePropertyId").getOrElse("0"))
+        buildConfigField("int", "VENDOR_BATTERY_TEMPERATURE_PROPERTY_ID",
+            providers.gradleProperty("polaren.batteryTemperaturePropertyId").getOrElse("0"))
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -40,9 +50,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.10"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
     packaging {
         resources {
@@ -71,6 +82,13 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp.logging.interceptor)
+
+    // Background relay
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // QR code generation (display only; no camera needed)
+    implementation(libs.zxing.core)
 
     // Tests
     testImplementation(libs.junit)
