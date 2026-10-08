@@ -36,7 +36,6 @@ class PairingState(context: Context) {
     }
 
     fun savePairing(pairingId: String, relayToken: String, sharedSecret: ByteArray) {
-        Log.d(TAG, "savePairing called with pairingId: $pairingId")
         prefs.edit()
             .putString(KEY_PAIRING_ID, pairingId)
             .putString(KEY_RELAY_TOKEN, seal(relayToken.toByteArray(Charsets.UTF_8)))
